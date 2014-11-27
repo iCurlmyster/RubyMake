@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+# initializing variables
 cc = "g++"
 cflags = "-c -Wall"
 target = "a.out"
@@ -12,7 +13,7 @@ $Objects = Array.new
 $libraries = Array.new
 $files_to_do = Array.new
 
-
+# check for arguments passed
 ARGV.each do |a|
 
 	arg = a.split(":")
@@ -32,6 +33,8 @@ ARGV.each do |a|
 
 	end
 end
+
+# function to check for includes in all header files
 
 def scanHeaderFile file_param
 	
@@ -63,7 +66,7 @@ def scanHeaderFile file_param
 	end
 end
 
-
+# function to check for includes through all of the cpp files
 
 def scanCPPFiles file_param
 
@@ -96,15 +99,23 @@ def scanCPPFiles file_param
 
 end
 
+# calling functions
+
 scanHeaderFile $startingFile
 
 scanCPPFiles $startingFile
+
+# adding headers from cpp files to header files array
 
 $cppObjects.each do |word|
 	$Objects.push(word)
 end
 
+# getting rid of repeat headers
+
 $Objects.uniq!
+
+# writing information to Makefile 
 
 File.open("Makefile","w+") do |line|
 
