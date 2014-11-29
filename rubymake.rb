@@ -10,7 +10,6 @@ inc_files = "-I/usr/local/include"
 lib_files = "-L/usr/local/lib"
 $cppObjects = Array.new
 $Objects = Array.new
-$libraries = Array.new
 $files_to_do = Array.new
 
 # check for arguments passed
@@ -44,12 +43,6 @@ def scanHeaderFile file_param
 	$Objects.push(no_ending[0])
 	f = File.open(file_param,"r").each_line { |line|  
 
-		line.scan(/#include <(\w+)>/) do |w|
-			if w != "iostream" then 
-				$libraries.push(w)
-			end
-		end
-
 		line.scan(/^#include "(.+)"$/) do |w|
 			$files_to_do.push(w)
 		end
@@ -76,12 +69,6 @@ def scanCPPFiles file_param
 	$cppObjects.push(no_ending[0])
 
 	f = File.open("#{no_ending[0]}.cpp","r").each_line { |line|  
-
-		line.scan(/#include <(\w+)>/) do |w|
-			if w != "iostream" then 
-				$libraries.push(w)
-			end
-		end
 
 		line.scan(/^#include "(.+)"$/) do |w|
 			$files_to_do.push(w)
