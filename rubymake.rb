@@ -115,6 +115,7 @@ end
 
 $Objects.uniq!
 
+
 # writing information to Makefile 
 
 File.open("Makefile","w+") do |line|
@@ -122,17 +123,23 @@ File.open("Makefile","w+") do |line|
 	line.puts "all: #{target}"
 	line << "#{target}: "
 	$Objects.each do |word|
-		line << "#{word}.o "
+		if File.exist? "#{word}.cpp"
+			line << "#{word}.o "
+		end
 	end
 	line << "\n"
 	line << "		#{cc} #{inc_files} #{lib_files} #{stdlib} "
 	$Objects.each do |word|
-		line << "#{word}.o "
+		if File.exist? "#{word}.cpp"
+			line << "#{word}.o "
+		end
 	end
 	line << "-o #{target}\n"
 	$Objects.each do |word|
-		line << "#{word}.o: #{word}.cpp\n"
-		line << "		#{cc} #{cflags} #{inc_files} #{stdlib} #{word}.cpp\n"
+		if File.exist? "#{word}.cpp"
+			line << "#{word}.o: #{word}.cpp\n"
+			line << "		#{cc} #{cflags} #{inc_files} #{stdlib} #{word}.cpp\n"
+		end
 	end
 
 	line.puts "clean:"
