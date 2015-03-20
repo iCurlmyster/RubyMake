@@ -41,7 +41,7 @@ def scanHeaderFile file_param
 
 	no_ending = file_param.split(".")
 	$Objects.push(no_ending[0])
-	f = File.open(file_param,"r").each_line { |line|
+	f = File.open(file_param,"r").each_line { |line|  
 
 		line.scan(/^#include "(.+)"$/) do |w|
 			$files_to_do.push(w)
