@@ -10,7 +10,6 @@ inc_files = "-I/usr/local/include"
 lib_files = "-L/usr/local/lib"
 $cppObjects = Array.new
 $Objects = Array.new
-$libraries = Array.new
 $files_to_do = Array.new
 
 # check for arguments passed
@@ -37,18 +36,12 @@ end
 # function to check for includes in all header files
 
 def scanHeaderFile file_param
-	
+
 	if file_param == nil then return end
 
-	no_ending = file_param.split(".") 
+	no_ending = file_param.split(".")
 	$Objects.push(no_ending[0])
-	f = File.open(file_param,"r").each_line { |line|  
-
-		line.scan(/#include <(\w+)>/) do |w|
-			if w != "iostream" then 
-				$libraries.push(w)
-			end
-		end
+	f = File.open(file_param,"r").each_line { |line|
 
 		line.scan(/^#include "(.+)"$/) do |w|
 			$files_to_do.push(w)
@@ -72,26 +65,21 @@ def scanCPPFiles file_param
 
 	if file_param == nil then return end
 
-	no_ending = file_param.split(".") 
-	$cppObjects.push(no_ending[0])
+	no_ending = file_param.split(".")
+	if File.exist? "#{no_ending}.cpp"
+		$cppObjects.push(no_ending[0])
 
-	f = File.open("#{no_ending[0]}.cpp","r").each_line { |line|  
+		f = File.open("#{no_ending[0]}.cpp","r").each_line { |line|
 
-		line.scan(/#include <(\w+)>/) do |w|
-			if w != "iostream" then 
-				$libraries.push(w)
+			line.scan(/^#include "(.+)"$/) do |w|
+				$files_to_do.push(w)
 			end
+		}
+		$files_to_do.flatten!
+		$cppObjects.each do |word|
+			$files_to_do.reject! {|repeat| repeat.split(".")[0] == word}
 		end
-
-		line.scan(/^#include "(.+)"$/) do |w|
-			$files_to_do.push(w)
-		end
-	}
-	$files_to_do.flatten!
-	$cppObjects.each do |word|
-		$files_to_do.reject! {|repeat| repeat.split(".")[0] == word}
 	end
-	
 	if $files_to_do != nil then
 		$files_to_do.uniq!
 		scanCPPFiles $files_to_do.pop
@@ -115,8 +103,7 @@ end
 
 $Objects.uniq!
 
-
-# writing information to Makefile 
+# writing information to Makefile
 
 File.open("Makefile","w+") do |line|
 
@@ -146,4 +133,3 @@ File.open("Makefile","w+") do |line|
 	line.puts "		rm -Rf *.o #{target}"
 
 end
-
