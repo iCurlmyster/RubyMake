@@ -6,7 +6,6 @@ A ruby script to search through c++ projects and generate a Makefile for those f
 ---
 
 To use this file place it in the folder with all of your cpp files.
-The files need to be all on the same level in the directory.
 
 To run the script:
 `$  ruby rubymake.rb`
